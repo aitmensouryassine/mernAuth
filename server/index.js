@@ -1,4 +1,5 @@
 import express from "express";
+import connectDB from "./lib/db.js";
 import dotenv from "dotenv";
 import signupRouter from "./routes/signup.route.js";
 
@@ -9,4 +10,7 @@ const PORT = process.env.PORT || 5001;
 app.use(express.json());
 app.use("/api/auth", signupRouter);
 
-app.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Listening on http://localhost:${PORT}`);
+  connectDB();
+});
