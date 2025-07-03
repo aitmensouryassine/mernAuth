@@ -49,14 +49,16 @@ const userSchema = Schema(
     },
     verificationTokenExpires: {
       type: Date,
-      default: new Date(Date.now() + 1 * 60 * 1000), // 1 * 60 * 1000 => 1m
-      expires: "1m",
+      default: new Date(Date.now() + 30 * 60 * 1000),
+      expires: "30m",
     },
   },
   { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) next();
+
   try {
     this.password = await argon2.hash(this.password);
     next();
@@ -65,7 +67,12 @@ userSchema.pre("save", async function (next) {
   }
 });
 userSchema.methods.comparePassword = async function (password) {
-  return await argon2.verify(this.password, password);
+  try {
+    return await argon2.verify(this.password, password);
+  } catch (error) {
+    console.error("Error while verifying the password!");
+    return false;
+  }
 };
 
 const User = mongoose.model("User", userSchema);
