@@ -6,7 +6,7 @@ const verifyEmailController = async (req, res) => {
   try {
     const user = await User.findOne({
       verificationToken: token,
-      verificationTokenExpires: { $lte: Date.now() },
+      verificationTokenExpires: { $gt: new Date() },
     });
 
     if (!user)
@@ -15,8 +15,9 @@ const verifyEmailController = async (req, res) => {
         .json({ message: "Verification link expired (Or not found)!" });
 
     user.verified = true;
+    user.verificationToken = null;
     user.verificationTokenExpires = null;
-    user.save();
+    await user.save();
 
     res.status(200).json({ message: "Email verified sunccessefully, please log in!" });
   } catch (error) {
