@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 const signin = async (req, res) => {
@@ -16,7 +17,29 @@ const signin = async (req, res) => {
     if (!user.verify && user.verificationTokenExpires > new Date())
       return res.status(403).json({ message: "Please verify your email first!" });
 
-    res.status(201).json({ message: "You're now logged in Successefylly!" });
+    const access_token = jwt.sign(
+      { _id: user._id, email: user.email },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "15m",
+      }
+    );
+    const refresh_token = jwt.sign(
+      { _id: user._id, email: user.email },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("refresh_token", refresh_token, {
+      expires: new Date(new Date() + 7 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
+
+    res
+      .status(201)
+      .json({ message: "You're now logged in Successefylly!", access_token });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
