@@ -12,7 +12,16 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/user", profileRouter);
 
-app.listen(PORT, () => {
-  console.log(`Listening on http://localhost:${PORT}`);
-  connectDB();
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`Listening on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.log("Server failed to start!", error);
+    process.exit(1);
+  }
+};
+startServer();
