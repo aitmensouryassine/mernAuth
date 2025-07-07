@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ message: "Token not provided!" });
 
     let token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET_KEY);
     req.user = decoded;
     next();
   } catch (error) {
