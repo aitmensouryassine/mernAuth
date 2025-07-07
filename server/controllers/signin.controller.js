@@ -19,19 +19,19 @@ const signin = async (req, res) => {
 
     const access_token = jwt.sign(
       { _id: user._id, email: user.email },
-      process.env.JWT_SECRET_KEY,
+      process.env.JWT_ACCESS_SECRET_KEY,
       {
         expiresIn: "15m",
       }
     );
     const refresh_token = jwt.sign(
       { _id: user._id, email: user.email },
-      process.env.JWT_SECRET_KEY,
+      process.env.JWT_REFRESH_SECRET_KEY,
       { expiresIn: "7d" }
     );
 
     res.cookie("refresh_token", refresh_token, {
-      expires: new Date(new Date() + 7 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
