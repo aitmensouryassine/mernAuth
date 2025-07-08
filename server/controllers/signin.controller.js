@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
+import { setKey } from "../lib/redis.js";
 
 const signin = async (req, res) => {
   try {
@@ -7,12 +8,11 @@ const signin = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user)
-      return res.status(403).json({ message: "(Username) or password are incorrect!" });
+    if (!user) return res.status(403).json({ message: "Invalid email or password!" });
 
     const checkPassword = await user.comparePassword(password);
     if (!checkPassword)
-      return res.status(403).json({ message: "Username or (password) are incorrect!" });
+      return res.status(403).json({ message: "Invalid email or password!" });
 
     if (!user.verify && user.verificationTokenExpires > new Date())
       return res.status(403).json({ message: "Please verify your email first!" });
@@ -30,8 +30,11 @@ const signin = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    const ttl = 7 * 24 * 60 * 60;
+    await setKey(`refresh_token:${user._id}`, refresh_token, ttl);
+
     res.cookie("refresh_token", refresh_token, {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + ttl * 1000),
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
