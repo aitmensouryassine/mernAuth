@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth.route.js";
 import profileRouter from "./routes/profile.route.js";
 import cookieParser from "cookie-parser";
+import { redisConnect } from "./lib/redis.js";
 
 dotenv.config();
 const app = express();
@@ -17,7 +18,7 @@ app.use("/api/user", profileRouter);
 const startServer = async () => {
   try {
     await connectDB();
-
+    await redisConnect();
     app.listen(PORT, () => {
       console.log(`Listening on http://localhost:${PORT}`);
     });
