@@ -9,7 +9,7 @@ const authRouter = Router();
 
 authRouter.post("/signin", signinController);
 authRouter.post("/signup", signupController);
-authRouter.get("/verify", verifyEmailController);
+authRouter.get("/verify/:token", verifyEmailController);
 authRouter.get("/refresh", refreshController);
 authRouter.get("/logout", logoutController);
 
