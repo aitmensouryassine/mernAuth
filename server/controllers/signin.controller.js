@@ -14,7 +14,7 @@ const signin = async (req, res) => {
     if (!checkPassword)
       return res.status(403).json({ message: "Invalid email or password!" });
 
-    if (!user.verify)
+    if (!user.verified)
       return res.status(403).json({ message: "Please verify your email first!" });
 
     const access_token = jwt.sign(
