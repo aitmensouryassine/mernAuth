@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+/**
+ * Connects to the MongoDB server.
+ *
+ * Checks if MONGODB_URI is defined in the .env file, then connects to MongoDB.
+ * Sets up listeners for 'connected', 'error', and 'disconnected' events
+ * for better debugging.
+ * If connection fails, logs the error and exits the process with code 1.
+ *
+ * @returns {Promise<void>} Resolves when the connection is successful.
+ */
 const connectDB = async () => {
   try {
     if (!process.env.MONGODB_URI)

@@ -1,9 +1,23 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Mongoose, Schema } from "mongoose";
 import validator from "validator";
 import argon2 from "argon2";
 
 const { isStrongPassword, isEmail } = validator;
 
+/**
+ * User Schema
+ *
+ * Defines the shape of the User documents in MongoDB
+ * Includes fields for name, email, password, and email verification
+ *
+ * @typedef {Object} User
+ * @property {string} name - User's full name
+ * @property {string} email - User's email
+ * @property {string} password - User's hashed password
+ * @property {boolean} verified - Whether user's email is verified or not.
+ * @property {string} verificationToken - Email verification token
+ * @property {Date} verificationTokenExpires - Expiry date for the verification token
+ */
 const userSchema = Schema(
   {
     name: {
@@ -56,6 +70,15 @@ const userSchema = Schema(
   { timestamps: true }
 );
 
+/**
+ * Mongoose pre-save middleware
+ *
+ * Hashes the password if modified before saving.
+ *
+ * @function
+ * @name userSchema.pre("save")
+ * @param {function} next - next middleware
+ */
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
@@ -66,6 +89,18 @@ userSchema.pre("save", async function (next) {
     next(error);
   }
 });
+
+/**
+ * Compare a plain password with the hashed password
+ *
+ * @async
+ * @function
+ * @name comparePassword
+ * @memberof User
+ * @param {string} password - Plain password to verify
+ * @returns {Promise<boolean>} - Returns true if password match and
+ * false otherwise.
+ */
 userSchema.methods.comparePassword = async function (password) {
   try {
     return await argon2.verify(this.password, password);

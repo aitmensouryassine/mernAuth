@@ -1,6 +1,23 @@
 import jwt from "jsonwebtoken";
 import { delKey, getKey, setKey } from "../lib/redis.js";
 
+/**
+ * Refreshes the access token and Rotates the refresh token.
+ *
+ * Gets the refresh token from the cookie, verify the signature
+ * if valid, check if the token:userId is stored in Redis,
+ * sign a new access and refresh tokens, save the refresh token
+ * to Redis and send it on httpOnly to the client.
+ *
+ * Sends a response with the decoded user and a new access token,
+ * or delete key from Redis and clear the cookie on failure.
+ *
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>} Sends a JSON response {user:object, access_token:string} on success
+ * or {message: string} on failure
+ */
+
 const refreshController = async (req, res) => {
   const { refresh_token } = req.cookies;
 

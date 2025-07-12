@@ -15,6 +15,17 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/user", profileRouter);
 
+/**
+ * Start express server
+ *
+ * Connects to MongoDB first, then to Redis and then start the server
+ * when failed exit with code 1
+ *
+ * @async
+ * @function
+ * @name startServer
+ * @returns {Promise<void>} - Resolves when the server starts successfully.
+ */
 const startServer = async () => {
   try {
     await connectDB();
