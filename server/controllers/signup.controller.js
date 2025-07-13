@@ -43,7 +43,6 @@ const signup = async (req, res) => {
                         `;
 
     const info = await sendEmail(email, "Verify your email!", htmlMessage);
-
     return res.status(201).json({ message: "Please check your inbox (or spam)!", info });
   } catch (error) {
     res.status(400).json({ message: error.message });
