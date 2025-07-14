@@ -25,8 +25,8 @@ const verifyEmailController = async (req, res) => {
 
     if (!user)
       return res
-        .status(400)
-        .json({ message: "Verification link expired (Or not found)!" });
+        .status(403)
+        .json({ message: "Verification link expired (or not found)!" });
 
     user.verified = true;
     user.verificationToken = null;
